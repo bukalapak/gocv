@@ -12,11 +12,6 @@ import (
 	"unsafe"
 )
 
-func getPoints(pts *C.Point, l int) []C.Point {
-	h := &reflect.SliceHeader{uintptr(unsafe.Pointer(pts)), l, l}
-	return *(*[]C.Point)(unsafe.Pointer(h))
-}
-
 // ArcLength calculates a contour perimeter or a curve length.
 //
 // For further details, please see:
@@ -41,7 +36,7 @@ func ApproxPolyDP(curve []image.Point, epsilon float64, closed bool) (approxCurv
 	cApproxCurve := C.ApproxPolyDP(cCurve, C.double(epsilon), C.bool(closed))
 	defer C.Points_Close(cApproxCurve)
 
-	cApproxCurvePoints := getPoints(cApproxCurve.points, int(cApproxCurve.length))
+	cApproxCurvePoints := (*[1 << 30]C.Point)(unsafe.Pointer(cApproxCurve.points))[:cApproxCurve.length:cApproxCurve.length]
 
 	approxCurve = make([]image.Point, cApproxCurve.length)
 	for i, cPoint := range cApproxCurvePoints {
@@ -81,6 +76,45 @@ func CvtColor(src Mat, dst *Mat, code ColorConversionCode) {
 	C.CvtColor(src.p, dst.p, C.int(code))
 }
 
+// ColormapTypes are the 12 GNU Octave/MATLAB equivalent colormaps.
+//
+// For further details, please see:
+// https://docs.opencv.org/master/d3/d50/group__imgproc__colormap.html
+type GRABCUT_MODE int
+
+// List of the available color maps
+//
+// For further details, please see:
+// https://docs.opencv.org/master/d3/d50/group__imgproc__colormap.html#ga9a805d8262bcbe273f16be9ea2055a65
+const (
+	GC_INIT_WITH_RECT  GRABCUT_MODE = 0
+	GC_INIT_WITH_MASK               = 1
+	GC_EVAL                         = 2
+	GC_EVAL_FREEZE_MODEL            = 3
+)
+
+
+// GrabCut interactively extract foreground and remove background.
+// It extract the foreground and remove the background of img Mat image 
+// and specify the extracted and removed pixel with mask Mat image using the
+// code param containing the specified rectangle and marked foreground and 
+// background.
+//
+// For further details, please see:
+// https://docs.opencv.org/trunk/d7/d1b/group__imgproc__misc.html#ga909c1dda50efcbeaa3ce126be862b37f
+//
+func GrabCut(img Mat, mask *Mat, bound image.Rectangle, bgdModel *Mat, fgdModel *Mat, iterCount int, mode int){
+	cRect := C.struct_Rect{
+		x:      C.int(bound.Min.X),
+		y:      C.int(bound.Min.Y),
+		width:  C.int(bound.Size().X),
+		height: C.int(bound.Size().Y),
+	}
+
+	C.GrabCut(img.p, mask.p, cRect, bgdModel.p, fgdModel.p, C.int(iterCount), C.int(mode))
+}
+
+
 // BilateralFilter applies a bilateral filter to an image.
 //
 // Bilateral filtering is described here:
@@ -108,32 +142,6 @@ func Blur(src Mat, dst *Mat, ksize image.Point) {
 	}
 
 	C.Blur(src.p, dst.p, pSize)
-}
-
-// BoxFilter blurs an image using the box filter.
-//
-// For further details, please see:
-// https://docs.opencv.org/master/d4/d86/group__imgproc__filter.html#gad533230ebf2d42509547d514f7d3fbc3
-//
-func BoxFilter(src Mat, dst *Mat, depth int, ksize image.Point) {
-	pSize := C.struct_Size{
-		height: C.int(ksize.X),
-		width:  C.int(ksize.Y),
-	}
-	C.BoxFilter(src.p, dst.p, C.int(depth), pSize)
-}
-
-// SqBoxFilter calculates the normalized sum of squares of the pixel values overlapping the filter.
-//
-// For further details, please see:
-// https://docs.opencv.org/master/d4/d86/group__imgproc__filter.html#ga045028184a9ef65d7d2579e5c4bff6c0
-//
-func SqBoxFilter(src Mat, dst *Mat, depth int, ksize image.Point) {
-	pSize := C.struct_Size{
-		height: C.int(ksize.X),
-		width:  C.int(ksize.Y),
-	}
-	C.SqBoxFilter(src.p, dst.p, C.int(depth), pSize)
 }
 
 // Dilate dilates an image by using a specific structuring element.
@@ -797,10 +805,10 @@ func FillPoly(img *Mat, pts [][]image.Point, c color.RGBA) {
 		p := (*C.struct_Point)(C.malloc(C.size_t(C.sizeof_struct_Point * len(pt))))
 		defer C.free(unsafe.Pointer(p))
 
-		pa := getPoints(p, len(pt))
+		pa := (*[1 << 30]C.struct_Point)(unsafe.Pointer(p))
 
 		for j, point := range pt {
-			pa[j] = C.struct_Point{
+			(*pa)[j] = C.struct_Point{
 				x: C.int(point.X),
 				y: C.int(point.Y),
 			}
@@ -1068,10 +1076,10 @@ func DrawContours(img *Mat, contours [][]image.Point, contourIdx int, c color.RG
 		p := (*C.struct_Point)(C.malloc(C.size_t(C.sizeof_struct_Point * len(contour))))
 		defer C.free(unsafe.Pointer(p))
 
-		pa := getPoints(p, len(contour))
+		pa := (*[1 << 30]C.struct_Point)(unsafe.Pointer(p))
 
 		for j, point := range contour {
-			pa[j] = C.struct_Point{
+			(*pa)[j] = C.struct_Point{
 				x: C.int(point.X),
 				y: C.int(point.Y),
 			}
