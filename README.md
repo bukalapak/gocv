@@ -2,7 +2,7 @@
 
 [![GoCV](https://raw.githubusercontent.com/hybridgroup/gocv/master/images/gocvlogo.jpg)](http://gocv.io/)
 
-[![GoDoc](https://godoc.org/gocv.io/x/gocv?status.svg)](https://godoc.org/github.com/hybridgroup/gocv)
+[![GoDoc](https://godoc.org/github.com/bukalapak/gocv?status.svg)](https://godoc.org/github.com/hybridgroup/gocv)
 [![Travis Build Status](https://travis-ci.org/hybridgroup/gocv.svg?branch=dev)](https://travis-ci.org/hybridgroup/gocv)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/9asd5foet54ru69q/branch/dev?svg=true)](https://ci.appveyor.com/project/deadprogram/gocv/branch/dev)
 [![codecov](https://codecov.io/gh/hybridgroup/gocv/branch/dev/graph/badge.svg)](https://codecov.io/gh/hybridgroup/gocv)
@@ -25,12 +25,12 @@ This example opens a video capture device using device "0", reads frames, and sh
 package main
 
 import (
-	"gocv.io/x/gocv"
+	"github.com/bukalapak/gocv"
 )
 
 func main() {
 	webcam, _ := gocv.VideoCaptureDevice(0)
-	window := gocv.NewWindow("Hello")	
+	window := gocv.NewWindow("Hello")
 	img := gocv.NewMat()
 
 	for {
@@ -54,7 +54,7 @@ import (
 	"fmt"
 	"image/color"
 
-	"gocv.io/x/gocv"
+	"github.com/bukalapak/gocv"
 )
 
 func main() {
@@ -65,7 +65,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 		return
-	}	
+	}
 	defer webcam.Close()
 
 	// open display window
@@ -123,7 +123,7 @@ There are examples in the [cmd directory](./cmd) of this repo in the form of var
 To install GoCV, run the following command:
 
 ```
-go get -u -d gocv.io/x/gocv
+go get -u -d github.com/bukalapak/gocv
 ```
 
 To run code that uses the GoCV package, you must also install OpenCV 3.4.1 on your system. Here are instructions for Ubuntu, OS X, and Windows.
@@ -138,7 +138,7 @@ You can use `make` to install OpenCV 3.4.1 with the handy `Makefile` included wi
 
 First, you need to change the current directory to the location of the GoCV repo, so you can access the `Makefile`:
 
-		cd $GOPATH/src/gocv.io/x/gocv
+		cd $GOPATH/src/github.com/bukalapak/gocv
 
 Next, you need to update the system, and install any required packages:
 
@@ -168,7 +168,7 @@ In order to build/run Go code that uses this package, you will need to specify t
 
 First, change the current directory to the location of the GoCV repo:
 
-		cd $GOPATH/src/gocv.io/x/gocv
+		cd $GOPATH/src/github.com/bukalapak/gocv
 
 One time per session, you must run the script:
 
@@ -187,7 +187,7 @@ You might want to copy the `env.sh` script into your own projects, to make it ea
 
 If you are not modifying gocv source, compile gocv to a static library, to significantly decrease your build times (`env.sh` must have been executed as described above):
 
-        go install gocv.io/x/gocv
+        go install github.com/bukalapak/gocv
 
 ### Other Linux installations
 
@@ -211,7 +211,7 @@ Once you have this info, you can build or run the Go code that consumes it by po
 
 For example:
 
-		export CGO_CPPFLAGS="-I/usr/local/include" 
+		export CGO_CPPFLAGS="-I/usr/local/include"
 		export CGO_LDFLAGS="-L/usr/local/lib -lopencv_core -lopencv_face -lopencv_videoio -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs -lopencv_objdetect -lopencv_features2d -lopencv_video -lopencv_dnn -lopencv_xfeatures2d"
 
 Please note that you will need to run these 2 lines of code one time in your current session in order to build or run the code, in order to setup the needed ENV variables.
@@ -234,7 +234,7 @@ In order to build/run Go code that uses this package, you will need to specify t
 
 First, you need to change the current directory to the location of the GoCV repo:
 
-		cd $GOPATH/src/gocv.io/x/gocv
+		cd $GOPATH/src/github.com/bukalapak/gocv
 
 One time per session, you must run the script:
 
@@ -253,7 +253,7 @@ You might want to copy the `env.sh` script into your own projects, to make it ea
 
 If you are not modifying gocv source, compile gocv to a static library, to significantly decrease your build times (`env.sh` must have been executed as described above):
 
-        go install gocv.io/x/gocv
+        go install github.com/bukalapak/gocv
 
 ## Windows
 
@@ -273,7 +273,7 @@ Choose the options for "posix" threads, and for "seh" exceptions handling, then 
 
 Add the `C:\Program Files\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev2\mingw64\bin` path to your System Path.
 
-#### CMake 
+#### CMake
 
 Download and install CMake [https://cmake.org/download/](https://cmake.org/download/) to the default location. CMake installer will add CMake to your system path.
 
@@ -306,7 +306,7 @@ Some new configuration options will have appeared. Scroll down the list and chan
 
 Click on the "Configure" button again, and wait for the configuration step.
 
-Once it is complete, click on the "Generate" button, and wait for it to generate your make files. 
+Once it is complete, click on the "Generate" button, and wait for it to generate your make files.
 
 Now run the following commands:
 
@@ -340,7 +340,7 @@ You might want to copy the `env.cmd` script into your own projects, to make it e
 
 If you are not modifying gocv source, compile gocv to a static library, to significantly decrease your build times (`env.cmd` must have been executed as described above):
 
-        go install gocv.io/x/gocv
+        go install github.com/bukalapak/gocv
 
 ## How to contribute
 
