@@ -24,14 +24,19 @@ Contour ApproxPolyDP(Contour curve, double epsilon, bool closed) {
     Point* points = new Point[length];
 
     for (size_t i = 0; i < length; i++) {
-        points[i] = (Point){approxCurvePts[i].x, approxCurvePts[i].y};
+        points[i] = Point{approxCurvePts[i].x, approxCurvePts[i].y};
     }
 
-    return (Contour){points, length};
+    return Contour{points, length};
 }
 
 void CvtColor(Mat src, Mat dst, int code) {
     cv::cvtColor(*src, *dst, code);
+}
+
+void GrabCut(Mat img, Mat mask, Rect bound, Mat bgdModel, Mat fgdModel, int iterCount, int mode) {
+    cv::grabCut(*img, *mask, cv::Rect(bound.x, bound.y, bound.width, bound.height), 
+        *bgdModel, *fgdModel, iterCount, mode);
 }
 
 void ConvexHull(Contour points, Mat hull, bool clockwise, bool returnPoints) {
@@ -61,16 +66,6 @@ void BilateralFilter(Mat src, Mat dst, int d, double sc, double ss) {
 void Blur(Mat src, Mat dst, Size ps) {
     cv::Size sz(ps.width, ps.height);
     cv::blur(*src, *dst, sz);
-}
-
-void BoxFilter(Mat src, Mat dst, int ddepth, Size ps) {
-    cv::Size sz(ps.width, ps.height);
-    cv::boxFilter(*src, *dst, ddepth, sz);
-}
-
-void SqBoxFilter(Mat src, Mat dst, int ddepth, Size ps) {
-    cv::Size sz(ps.width, ps.height);
-    cv::sqrBoxFilter(*src, *dst, ddepth, sz);
 }
 
 void Dilate(Mat src, Mat dst, Mat kernel) {
@@ -140,7 +135,7 @@ struct Contours FindContours(Mat src, int mode, int method) {
             pts[j] = pt;
         }
 
-        points[i] = (Contour){pts, (int)contours[i].size()};
+        points[i] = Contour{pts, (int)contours[i].size()};
     }
 
     Contours cons = {points, (int)contours.size()};
