@@ -35,8 +35,8 @@ deps_fedora:
 	sudo dnf install $(RPMS)
 
 deps_debian:
-	sudo apt-get update
-	sudo apt-get install $(DEBS)
+	apt-get update
+	apt-get install $(DEBS)
 
 
 # Download OpenCV source tarballs.
@@ -70,8 +70,8 @@ install: deps download build sudo_install clean verify
 # Install system wide.
 sudo_install:
 	cd $(TMP_DIR)opencv/opencv-$(OPENCV_VERSION)/build
-	sudo $(MAKE) install
-	sudo ldconfig
+	$(MAKE) install
+	ldconfig
 	cd -
 
 # Build a minimal Go app to confirm gocv works.
