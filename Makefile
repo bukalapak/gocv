@@ -43,9 +43,9 @@ deps_debian:
 download:
 	mkdir $(TMP_DIR)opencv
 	cd $(TMP_DIR)opencv
-	wget --quiet -O opencv.zip https://github.com/opencv/opencv/archive/$(OPENCV_VERSION).zip
+	wget --show-progress --quiet -O opencv.zip https://github.com/opencv/opencv/archive/$(OPENCV_VERSION).zip
 	unzip -q opencv.zip
-	wget --quiet -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/$(OPENCV_VERSION).zip
+	wget --show-progress --quiet -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/$(OPENCV_VERSION).zip
 	unzip -q opencv_contrib.zip
 	rm opencv.zip opencv_contrib.zip
 	cd -
