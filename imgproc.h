@@ -14,6 +14,7 @@ double ArcLength(Contour curve, bool is_closed);
 Contour ApproxPolyDP(Contour curve, double epsilon, bool closed);
 void CvtColor(Mat src, Mat dst, int code);
 void GrabCut(Mat img, Mat mask, Rect bound, Mat bgdModel, Mat fgdModel, int iterCount, int mode);
+void FillImageWithImage(Mat img, Mat fill);
 void ConvexHull(Contour points, Mat hull, bool clockwise, bool returnPoints);
 void ConvexityDefects(Contour points, Mat hull, Mat result);
 void BilateralFilter(Mat src, Mat dst, int d, double sc, double ss);

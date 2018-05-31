@@ -3,6 +3,7 @@ package gocv
 /*
 #include <stdlib.h>
 #include "imgproc.h"
+#include "core.h"
 */
 import "C"
 import (
@@ -81,16 +82,16 @@ func CvtColor(src Mat, dst *Mat, code ColorConversionCode) {
 	C.CvtColor(src.p, dst.p, C.int(code))
 }
 
-// ColormapTypes are the 12 GNU Octave/MATLAB equivalent colormaps.
+// GRABCUT_MODE are GrabCut algorithm flags. .
 //
 // For further details, please see:
-// https://docs.opencv.org/master/d3/d50/group__imgproc__colormap.html
+// https://docs.opencv.org/trunk/d7/d1b/group__imgproc__misc.html#ggaf8b5832ba85e59fc7a98a2afd034e558aef3752e3c27c4af9445d0b5590b6aa05
 type GRABCUT_MODE int
 
-// List of the available color maps
+// List of the available flags
 //
 // For further details, please see:
-// https://docs.opencv.org/master/d3/d50/group__imgproc__colormap.html#ga9a805d8262bcbe273f16be9ea2055a65
+// https://docs.opencv.org/trunk/d7/d1b/group__imgproc__misc.html#ggaf8b5832ba85e59fc7a98a2afd034e558aef3752e3c27c4af9445d0b5590b6aa05
 const (
 	GC_INIT_WITH_RECT  GRABCUT_MODE = 0
 	GC_INIT_WITH_MASK               = 1
@@ -108,7 +109,7 @@ const (
 // For further details, please see:
 // https://docs.opencv.org/trunk/d7/d1b/group__imgproc__misc.html#ga909c1dda50efcbeaa3ce126be862b37f
 //
-func GrabCut(img Mat, mask *Mat, bound image.Rectangle, bgdModel *Mat, fgdModel *Mat, iterCount int, mode int){
+func GrabCut(img *Mat, mask *Mat, bound image.Rectangle, bgdModel *Mat, fgdModel *Mat, iterCount int, mode int){
 	cRect := C.struct_Rect{
 		x:      C.int(bound.Min.X),
 		y:      C.int(bound.Min.Y),
@@ -119,6 +120,40 @@ func GrabCut(img Mat, mask *Mat, bound image.Rectangle, bgdModel *Mat, fgdModel 
 	C.GrabCut(img.p, mask.p, cRect, bgdModel.p, fgdModel.p, C.int(iterCount), C.int(mode))
 }
 
+func FillImageWithImage3D(img *Mat, fill Mat) {
+
+	cMats := C.struct_Mats{}
+	C.Mat_Split(img.p, &(cMats))
+	var img_split = make([]Mat, cMats.length)
+	for i := C.int(0); i < cMats.length; i++ {
+		img_split[i].p = C.Mats_get(cMats, i)
+	}
+
+	cMats2 := C.struct_Mats{}
+	C.Mat_Split(fill.p, &(cMats2))
+	var fill_split = make([]Mat, cMats2.length)
+	for i := C.int(0); i < cMats2.length; i++ {
+		fill_split[i].p = C.Mats_get(cMats2, i)
+	}
+
+	if len(img_split) == len(fill_split) {
+//		C.FillImageWithImage((img_split[0].p), fill_split[0].p)
+//		C.FillImageWithImage((img_split[1].p), fill_split[1].p)
+//		C.FillImageWithImage((img_split[2].p), fill_split[2].p)
+
+		cMatArray := make([]C.Mat, len(img_split))
+		for i, r := range img_split {
+			C.FillImageWithImage(img_split[i].p, fill_split[i].p)
+			cMatArray[i] = r.p
+		}
+		cMats := C.struct_Mats{
+			mats:   (*C.Mat)(&cMatArray[0]),
+			length: C.int(len(img_split)),
+		}
+
+		C.Mat_Merge(cMats, img.p)
+	}
+}
 
 // BilateralFilter applies a bilateral filter to an image.
 //
