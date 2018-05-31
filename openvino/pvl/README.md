@@ -2,7 +2,7 @@
 
 The Photography Vision Library (PVL) is a set of extensions to OpenCV that is installed with the Intel OpenVINO toolkit. It uses computer vision and imaging algorithms developed at Intel.
 
-GoCV support for the PVL can be found here in the "gocv.io/x/gocv/openvino/pvl" package.
+GoCV support for the PVL can be found here in the "github.com/bukalapak/gocv/openvino/pvl" package.
 
 ## How to use
 
@@ -13,8 +13,8 @@ import (
 	"fmt"
 	"image/color"
 
-	"gocv.io/x/gocv"
-	"gocv.io/x/gocv/openvino/pvl"
+	"github.com/bukalapak/gocv"
+	"github.com/bukalapak/gocv/openvino/pvl"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		fmt.Printf("error opening video capture device: %v\n", deviceID)
 		return
-	}	
+	}
 	defer webcam.Close()
 
 	// open display window
@@ -38,7 +38,7 @@ func main() {
 	// prepare grayscale image matrix
 	imgGray := gocv.NewMat()
 	defer imgGray.Close()
-	
+
 	// color to draw the rect for detected faces
 	blue := color.RGBA(0, 0, 255, 0)
 
@@ -61,7 +61,7 @@ func main() {
 
 		// convert image to grayscale for detection
 		gocv.CvtColor(img, &imgGray, gocv.ColorBGR2GRAY);
-	
+
 		// detect faces
 		faces := fd.DetectFaceRect(imgGray)
 		fmt.Printf("found %d faces\n", len(faces))

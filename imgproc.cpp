@@ -24,14 +24,24 @@ Contour ApproxPolyDP(Contour curve, double epsilon, bool closed) {
     Point* points = new Point[length];
 
     for (size_t i = 0; i < length; i++) {
-        points[i] = (Point){approxCurvePts[i].x, approxCurvePts[i].y};
+        points[i] = Point{approxCurvePts[i].x, approxCurvePts[i].y};
     }
 
-    return (Contour){points, length};
+    return Contour{points, length};
 }
 
 void CvtColor(Mat src, Mat dst, int code) {
     cv::cvtColor(*src, *dst, code);
+}
+
+void GrabCut(Mat img, Mat mask, Rect bound, Mat bgdModel, Mat fgdModel, int iterCount, int mode) {
+    cv::grabCut(*img, *mask, cv::Rect(bound.x, bound.y, bound.width, bound.height), 
+        *bgdModel, *fgdModel, iterCount, mode);
+}
+
+void FillImageWithImage(Mat img, Mat fill) {
+    fill->copyTo((img->operator()(cv::Range(0,fill->rows), 
+            cv::Range(0,fill->cols))));
 }
 
 void ConvexHull(Contour points, Mat hull, bool clockwise, bool returnPoints) {
@@ -140,7 +150,7 @@ struct Contours FindContours(Mat src, int mode, int method) {
             pts[j] = pt;
         }
 
-        points[i] = (Contour){pts, (int)contours[i].size()};
+        points[i] = Contour{pts, (int)contours[i].size()};
     }
 
     Contours cons = {points, (int)contours.size()};

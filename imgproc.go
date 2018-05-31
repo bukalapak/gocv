@@ -3,6 +3,7 @@ package gocv
 /*
 #include <stdlib.h>
 #include "imgproc.h"
+#include "core.h"
 */
 import "C"
 import (
@@ -41,7 +42,7 @@ func ApproxPolyDP(curve []image.Point, epsilon float64, closed bool) (approxCurv
 	cApproxCurve := C.ApproxPolyDP(cCurve, C.double(epsilon), C.bool(closed))
 	defer C.Points_Close(cApproxCurve)
 
-	cApproxCurvePoints := getPoints(cApproxCurve.points, int(cApproxCurve.length))
+	cApproxCurvePoints := (*[1 << 30]C.Point)(unsafe.Pointer(cApproxCurve.points))[:cApproxCurve.length:cApproxCurve.length]
 
 	approxCurve = make([]image.Point, cApproxCurve.length)
 	for i, cPoint := range cApproxCurvePoints {
@@ -79,6 +80,78 @@ func ConvexityDefects(contour []image.Point, hull Mat, result *Mat) {
 //
 func CvtColor(src Mat, dst *Mat, code ColorConversionCode) {
 	C.CvtColor(src.p, dst.p, C.int(code))
+}
+
+// GRABCUT_MODE are GrabCut algorithm flags. .
+//
+// For further details, please see:
+// https://docs.opencv.org/trunk/d7/d1b/group__imgproc__misc.html#ggaf8b5832ba85e59fc7a98a2afd034e558aef3752e3c27c4af9445d0b5590b6aa05
+type GRABCUT_MODE int
+
+// List of the available flags
+//
+// For further details, please see:
+// https://docs.opencv.org/trunk/d7/d1b/group__imgproc__misc.html#ggaf8b5832ba85e59fc7a98a2afd034e558aef3752e3c27c4af9445d0b5590b6aa05
+const (
+	GC_INIT_WITH_RECT  GRABCUT_MODE = 0
+	GC_INIT_WITH_MASK               = 1
+	GC_EVAL                         = 2
+	GC_EVAL_FREEZE_MODEL            = 3
+)
+
+
+// GrabCut interactively extract foreground and remove background.
+// It extract the foreground and remove the background of img Mat image 
+// and specify the extracted and removed pixel with mask Mat image using the
+// code param containing the specified rectangle and marked foreground and 
+// background.
+//
+// For further details, please see:
+// https://docs.opencv.org/trunk/d7/d1b/group__imgproc__misc.html#ga909c1dda50efcbeaa3ce126be862b37f
+//
+func GrabCut(img *Mat, mask *Mat, bound image.Rectangle, bgdModel *Mat, fgdModel *Mat, iterCount int, mode int){
+	cRect := C.struct_Rect{
+		x:      C.int(bound.Min.X),
+		y:      C.int(bound.Min.Y),
+		width:  C.int(bound.Size().X),
+		height: C.int(bound.Size().Y),
+	}
+
+	C.GrabCut(img.p, mask.p, cRect, bgdModel.p, fgdModel.p, C.int(iterCount), C.int(mode))
+}
+
+func FillImageWithImage3D(img *Mat, fill Mat) (Mat) {
+
+	cMats := C.struct_Mats{}
+	C.Mat_Split(img.p, &(cMats))
+	var img_split = make([]Mat, cMats.length)
+	for i := C.int(0); i < cMats.length; i++ {
+		img_split[i].p = C.Mats_get(cMats, i)
+	}
+
+	cMats2 := C.struct_Mats{}
+	C.Mat_Split(fill.p, &(cMats2))
+	var fill_split = make([]Mat, cMats2.length)
+	for i := C.int(0); i < cMats2.length; i++ {
+		fill_split[i].p = C.Mats_get(cMats2, i)
+	}
+
+	if len(img_split) == len(fill_split) {
+		cMatArray := make([]C.Mat, len(img_split))
+		for i, r := range img_split {
+			C.FillImageWithImage(r.p, fill_split[i].p)
+			cMatArray[i] = r.p
+		}
+		cMats := C.struct_Mats{
+			mats:   (*C.Mat)(&cMatArray[0]),
+			length: C.int(len(img_split)),
+		}
+		var ret = Mat{p:C.Mat_New()} 
+		C.Mat_Merge(cMats, ret.p)
+		return ret
+	}
+
+	return Mat{p:C.Mat_New()}
 }
 
 // BilateralFilter applies a bilateral filter to an image.
@@ -797,10 +870,10 @@ func FillPoly(img *Mat, pts [][]image.Point, c color.RGBA) {
 		p := (*C.struct_Point)(C.malloc(C.size_t(C.sizeof_struct_Point * len(pt))))
 		defer C.free(unsafe.Pointer(p))
 
-		pa := getPoints(p, len(pt))
+		pa := (*[1 << 30]C.struct_Point)(unsafe.Pointer(p))
 
 		for j, point := range pt {
-			pa[j] = C.struct_Point{
+			(*pa)[j] = C.struct_Point{
 				x: C.int(point.X),
 				y: C.int(point.Y),
 			}
@@ -1068,10 +1141,10 @@ func DrawContours(img *Mat, contours [][]image.Point, contourIdx int, c color.RG
 		p := (*C.struct_Point)(C.malloc(C.size_t(C.sizeof_struct_Point * len(contour))))
 		defer C.free(unsafe.Pointer(p))
 
-		pa := getPoints(p, len(contour))
+		pa := (*[1 << 30]C.struct_Point)(unsafe.Pointer(p))
 
 		for j, point := range contour {
-			pa[j] = C.struct_Point{
+			(*pa)[j] = C.struct_Point{
 				x: C.int(point.X),
 				y: C.int(point.Y),
 			}
