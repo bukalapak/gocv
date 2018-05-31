@@ -120,7 +120,7 @@ func GrabCut(img *Mat, mask *Mat, bound image.Rectangle, bgdModel *Mat, fgdModel
 	C.GrabCut(img.p, mask.p, cRect, bgdModel.p, fgdModel.p, C.int(iterCount), C.int(mode))
 }
 
-func FillImageWithImage3D(img *Mat, fill Mat) {
+func FillImageWithImage3D(img *Mat, fill Mat) (Mat) {
 
 	cMats := C.struct_Mats{}
 	C.Mat_Split(img.p, &(cMats))
@@ -137,22 +137,21 @@ func FillImageWithImage3D(img *Mat, fill Mat) {
 	}
 
 	if len(img_split) == len(fill_split) {
-//		C.FillImageWithImage((img_split[0].p), fill_split[0].p)
-//		C.FillImageWithImage((img_split[1].p), fill_split[1].p)
-//		C.FillImageWithImage((img_split[2].p), fill_split[2].p)
-
 		cMatArray := make([]C.Mat, len(img_split))
 		for i, r := range img_split {
-			C.FillImageWithImage(img_split[i].p, fill_split[i].p)
+			C.FillImageWithImage(r.p, fill_split[i].p)
 			cMatArray[i] = r.p
 		}
 		cMats := C.struct_Mats{
 			mats:   (*C.Mat)(&cMatArray[0]),
 			length: C.int(len(img_split)),
 		}
-
-		C.Mat_Merge(cMats, img.p)
+		var ret = Mat{p:C.Mat_New()} 
+		C.Mat_Merge(cMats, ret.p)
+		return ret
 	}
+
+	return Mat{p:C.Mat_New()}
 }
 
 // BilateralFilter applies a bilateral filter to an image.

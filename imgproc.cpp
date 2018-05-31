@@ -40,8 +40,8 @@ void GrabCut(Mat img, Mat mask, Rect bound, Mat bgdModel, Mat fgdModel, int iter
 }
 
 void FillImageWithImage(Mat img, Mat fill) {
-    cv::Mat roi = cv::Mat(*img, cv::Rect(0, 0, fill->rows, fill->cols));
-    fill->copyTo(roi);
+    fill->copyTo((img->operator()(cv::Range(0,fill->rows), 
+            cv::Range(0,fill->cols))));
 }
 
 void ConvexHull(Contour points, Mat hull, bool clockwise, bool returnPoints) {
