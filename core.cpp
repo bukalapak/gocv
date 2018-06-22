@@ -28,6 +28,10 @@ Mat Mat_NewFromBytes(int rows, int cols, int type, struct ByteArray buf) {
     return new cv::Mat(rows, cols, type, buf.data);
 }
 
+Mat Mat_NewOnes(int rows, int cols, int type) {
+    return new cv::Mat(rows, cols, type,1);
+}
+
 // Mat_Close deletes an existing Mat
 void Mat_Close(Mat m) {
     delete m;

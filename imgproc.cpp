@@ -44,6 +44,30 @@ void FillImageWithImage(Mat img, Mat fill) {
             cv::Range(0,fill->cols))));
 }
 
+void RemoveSmallObject(Mat img, Mat retImg, int thresh) {
+    //find all your connected components (white blobs in your image)
+    cv::Mat output, stats, centroids;
+
+    int nccomps; //8 connectivity with CV_32S = 4
+    nccomps = cv::connectedComponentsWithStats(*img, output, stats, centroids);
+
+    std::vector<uint8_t> colors(nccomps, static_cast<uint8_t>(0));
+
+    for(int i = 1; i < nccomps; i++ ) {
+        colors[i] = static_cast<uint8_t>(0);// small regions are painted with black too.
+        if( stats.at<int>(i, cv::CC_STAT_AREA) > thresh )
+            colors[i] = static_cast<uint8_t>(255); // big regions are painted as with
+    }
+    
+    for( int y = 0; y < retImg->rows; y++ ){
+        for( int x = 0; x < retImg->cols; x++ )
+        {
+            int label = output.at<int>(y, x);
+            retImg->at<uchar>(y, x) = colors[label];
+        }
+    }
+}
+
 void ConvexHull(Contour points, Mat hull, bool clockwise, bool returnPoints) {
     std::vector<cv::Point> pts;
 

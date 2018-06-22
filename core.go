@@ -147,6 +147,11 @@ func NewMatFromBytes(rows int, cols int, mt MatType, data []byte) (Mat, error) {
 	return Mat{p: C.Mat_NewFromBytes(C.int(rows), C.int(cols), C.int(mt), *cBytes)}, nil
 }
 
+// NewMatOnes returns a new Mat with a specific size and type, initialized with all values as 1.
+func NewMatOnes(rows int, cols int, mt MatType) (Mat, error) {
+	return Mat{p: C.Mat_NewOnes(C.int(rows), C.int(cols), C.int(mt))}, nil
+}
+
 // Close the Mat object.
 func (m *Mat) Close() error {
 	C.Mat_Close(m.p)

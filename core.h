@@ -20,6 +20,12 @@ typedef struct IntVector {
     int length;
 } IntVector;
 
+// Wrapper for std::vector<int>
+typedef struct FloatVector {
+    float* val;
+    int length;
+} FloatVector;
+
 #ifdef __cplusplus
 #include <opencv2/opencv.hpp>
 extern "C" {
@@ -181,6 +187,7 @@ Mat Mat_NewWithSize(int rows, int cols, int type);
 Mat Mat_NewFromScalar(const Scalar ar, int type);
 Mat Mat_NewWithSizeFromScalar(const Scalar ar, int rows, int cols, int type);
 Mat Mat_NewFromBytes(int rows, int cols, int type, struct ByteArray buf);
+Mat Mat_NewOnes(int rows, int cols, int type);
 void Mat_Close(Mat m);
 int Mat_Empty(Mat m);
 Mat Mat_Clone(Mat m);

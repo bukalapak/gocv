@@ -120,8 +120,12 @@ func GrabCut(img *Mat, mask *Mat, bound image.Rectangle, bgdModel *Mat, fgdModel
 	C.GrabCut(img.p, mask.p, cRect, bgdModel.p, fgdModel.p, C.int(iterCount), C.int(mode))
 }
 
+// FillImageWithImage3D is a function to fill a Mat (img) with the other Mat (fill).
+//
+// img and fill is a Mat with more than one channel and have same channels.
+// img width and height is larger or have equal size with fill. 
+// in Python it call as img[:fill.shape[0],:fill.shape[1],:] = fill
 func FillImageWithImage3D(img *Mat, fill Mat) (Mat) {
-
 	cMats := C.struct_Mats{}
 	C.Mat_Split(img.p, &(cMats))
 	var img_split = make([]Mat, cMats.length)
@@ -152,6 +156,16 @@ func FillImageWithImage3D(img *Mat, fill Mat) (Mat) {
 	}
 
 	return Mat{p:C.Mat_New()}
+}
+
+
+// RemoveSmallObject remove small object that less then threshold.
+//
+// img should have value 0 or 255 with type MatTypeCV8U (CV_8U)
+// retImg is destination mat that will have value 0 or 255
+// thresh is a threshold value 
+func RemoveSmallObject(img Mat, retImg *Mat, thresh int) {
+	C.RemoveSmallObject(img.p, retImg.p, C.int(thresh))
 }
 
 // BilateralFilter applies a bilateral filter to an image.
