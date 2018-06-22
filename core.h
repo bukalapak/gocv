@@ -198,6 +198,8 @@ void Mat_SetTo(Mat m, Mat mask, int value);
 void Mat_ConvertTo(Mat m, Mat dst, int type);
 struct ByteArray Mat_ToBytes(Mat m);
 Mat Mat_Region(Mat m, Rect r);
+Mat Mat_RowAt(Mat m, int r);
+Mat Mat_ColAt(Mat m, int c);
 Mat Mat_Reshape(Mat m, int cn, int rows);
 void Mat_PatchNaNs(Mat m);
 Mat Mat_ConvertFp16(Mat m);

@@ -244,6 +244,24 @@ func (m *Mat) Region(rio image.Rectangle) Mat {
 	return Mat{p: C.Mat_Region(m.p, cRect)}
 }
 
+func (m *Mat) RowAt(r int) Mat {
+	return Mat{p: C.Mat_RowAt(m.p, C.int(r))}
+}
+
+func (m *Mat) RowSumAt(r int) float64 {
+	s := C.Mat_Sum(C.Mat_RowAt(m.p, C.int(r)))
+	return (float64(s.val1) + float64(s.val2) + float64(s.val3) + float64(s.val4))	
+}
+
+func (m *Mat) ColAt(c int) Mat {
+	return Mat{p: C.Mat_ColAt(m.p, C.int(c))}
+}
+
+func (m *Mat) ColSumAt(c int) float64 {
+	s := C.Mat_Sum(C.Mat_ColAt(m.p, C.int(c)))
+	return (float64(s.val1) + float64(s.val2) + float64(s.val3) + float64(s.val4))	
+}
+
 // Reshape changes the shape and/or the number of channels of a 2D matrix without copying the data.
 //
 // For further details, please see:

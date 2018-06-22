@@ -79,6 +79,16 @@ Mat Mat_Region(Mat m, Rect r) {
     return new cv::Mat(*m, cv::Rect(r.x, r.y, r.width, r.height));
 }
 
+// Mat_RowAt return submatrix of all elements at row 'r' of Mat
+Mat Mat_RowAt(Mat m, int r) {
+    return new cv::Mat(m->row(r));
+}
+
+// Mat_ColAt return submatrix of all elements at col 'c' of Mat
+Mat Mat_ColAt(Mat m, int c) {
+    return new cv::Mat(m->col(c));
+}
+
 Mat Mat_Reshape(Mat m, int cn, int rows) {
     return new cv::Mat(m->reshape(cn, rows));
 }
