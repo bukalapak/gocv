@@ -147,9 +147,14 @@ func NewMatFromBytes(rows int, cols int, mt MatType, data []byte) (Mat, error) {
 	return Mat{p: C.Mat_NewFromBytes(C.int(rows), C.int(cols), C.int(mt), *cBytes)}, nil
 }
 
-// NewMatOnes returns a new Mat with a specific size and type, initialized with all values as 1.
-func NewMatOnes(rows int, cols int, mt MatType) (Mat, error) {
-	return Mat{p: C.Mat_NewOnes(C.int(rows), C.int(cols), C.int(mt))}, nil
+// NewMatOnes returns a new Mat with a specific size and type, initialized with all values as 1Cop.
+func NewMatOnes(rows int, cols int, mt MatType) (Mat) {
+	return Mat{p: C.Mat_NewOnes(C.int(rows), C.int(cols), C.int(mt))}
+}
+
+// NewMatOnes returns a new Mat with a specific size and type, initialized with all values as 1Cop.
+func NewMatWithValue(rows int, cols int, mt MatType, val int) (Mat) {
+	return Mat{p: C.Mat_NewWithValue(C.int(rows), C.int(cols), C.int(mt), C.int(val))}
 }
 
 // Close the Mat object.
@@ -182,6 +187,16 @@ func (m *Mat) Clone() Mat {
 //
 func (m *Mat) CopyTo(dst Mat) {
 	C.Mat_CopyTo(m.p, dst.p)
+	return
+}
+
+// SetTo assign a value into Mat with specified mask Mat.
+//
+// For further details, please see:
+// https://docs.opencv.org/3.1.0/d3/d63/classcv_1_1Mat.html#a0440e2a164c0b0d8462fb1e487be9876
+//
+func (m *Mat) SetToWithMask(mask Mat, val int) {
+	C.Mat_SetTo(m.p, mask.p, C.int(val))
 	return
 }
 

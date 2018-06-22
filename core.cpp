@@ -32,6 +32,10 @@ Mat Mat_NewOnes(int rows, int cols, int type) {
     return new cv::Mat(rows, cols, type,1);
 }
 
+Mat Mat_NewWithValue(int rows, int cols, int type, int value) {
+    return new cv::Mat(rows, cols, type, value);
+}
+
 // Mat_Close deletes an existing Mat
 void Mat_Close(Mat m) {
     delete m;
@@ -55,6 +59,10 @@ void Mat_CopyTo(Mat m, Mat dst) {
 // Mat_CopyToWithMask copies this Mat to another Mat while applying the mask
 void Mat_CopyToWithMask(Mat m, Mat dst, Mat mask) {
     m->copyTo(*dst, *mask);
+}
+
+void Mat_SetTo(Mat m, Mat mask, int value) {
+    m->setTo(value, *mask);
 }
 
 void Mat_ConvertTo(Mat m, Mat dst, int type) {

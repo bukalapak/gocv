@@ -109,7 +109,7 @@ const (
 // For further details, please see:
 // https://docs.opencv.org/trunk/d7/d1b/group__imgproc__misc.html#ga909c1dda50efcbeaa3ce126be862b37f
 //
-func GrabCut(img *Mat, mask *Mat, bound image.Rectangle, bgdModel *Mat, fgdModel *Mat, iterCount int, mode int){
+func GrabCut(img *Mat, mask *Mat, bound image.Rectangle, bgdModel *Mat, fgdModel *Mat, iterCount int, mode int) {
 	cRect := C.struct_Rect{
 		x:      C.int(bound.Min.X),
 		y:      C.int(bound.Min.Y),
@@ -157,7 +157,6 @@ func FillImageWithImage3D(img *Mat, fill Mat) (Mat) {
 
 	return Mat{p:C.Mat_New()}
 }
-
 
 // RemoveSmallObject remove small object that less then threshold.
 //
